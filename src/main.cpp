@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <raylib.h>
+#include <iostream>
 
 #include "playfield.hpp"
 #include "piece.hpp"
@@ -10,7 +11,8 @@ int main(int argc, char *argv[]) {
     const int screenHeight = 800;
 
     playfield pf;
-    piece CurrentPiece(&pf.GetField());
+    piece currentPiece(&pf.GetField());
+    pf.currentPiece = &currentPiece;
     pallete p;
 
     size_t frameCounter = 0;
@@ -22,30 +24,34 @@ int main(int argc, char *argv[]) {
         int key = GetKeyPressed();
         switch (key) {
             case KEY_LEFT:
-                CurrentPiece.Left();
+                pf.currentPiece->Left();
                 break;
             case KEY_RIGHT:
-                CurrentPiece.Right();
+                pf.currentPiece->Right();
                 break;
             case KEY_DOWN:
-                CurrentPiece.step();
+                pf.currentPiece->step();
                 break;
             case KEY_R:
-                pf.ResetPlayfield(CurrentPiece);
+                pf.ResetPlayfield();
                 break;
             case KEY_X: 
-                CurrentPiece.rotateRight();
+                pf.currentPiece->rotateRight();
                 break;
             case KEY_Z: 
-                CurrentPiece.rotateLeft();
+                pf.currentPiece->rotateLeft();
                 break;
             default:
                break;
         }
         if (++frameCounter >= 15) {
-            CurrentPiece.step();
+            if (pf.currentPiece->step()) {
+                pf.LookForCompleteLines();
+                pf.currentPiece->NewPiece();
+            } 
+
+
             frameCounter = 0;
-            pf.LookForCompleteLines();
         }
         
         // Drawing ---------------------------

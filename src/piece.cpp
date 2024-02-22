@@ -3,6 +3,7 @@
 
 piece::piece(vector<vector<square>>* f) {
     this->field = f;
+    this->rotator = rotation(f);
     NewPiece();
 }
 
@@ -16,7 +17,6 @@ void piece::NewPiece() {
             squares = {{3,5}, {4,5}, {5,5}, {6,5}};
             PaintSquares(pieceColor);
             ChangePieceBackgroundState(false);
-            rotator.SetPiece(pt);
         } break;
         case PieceTypes::O: {
             squares.clear();
@@ -58,19 +58,16 @@ void piece::NewPiece() {
             PaintSquares(pieceColor);
             ChangePieceBackgroundState(false);
         } break;
-        default:
-            
-        break;
     }
     rotator.SetPiece(pt);
 }
 
-void piece::step() {
+bool piece::step() {
     if(CanGoDown()) {
-        PaintSquares(pieceColor);
         down();
+        return false;
     } else {
-        NewPiece();
+        return true;
     }
 }
 

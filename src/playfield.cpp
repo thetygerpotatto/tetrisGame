@@ -12,7 +12,7 @@ playfield::playfield() {
     }
 }
 
-void playfield::ResetPlayfield(piece& p) {
+void playfield::ResetPlayfield() {
     for (size_t x = 0; x < width; ++x) {
         for (size_t y = 0;y < height; ++y) {
             field[x][y].SetColor(colors.Default);
@@ -20,7 +20,7 @@ void playfield::ResetPlayfield(piece& p) {
         }
     }
 
-    p.NewPiece();
+    currentPiece->NewPiece();
 }
 
 vector<vector<square>>& playfield::GetField() {

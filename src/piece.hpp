@@ -1,15 +1,14 @@
 #ifndef PIECE
 #define PIECE 
-#include <cstddef>
 #include <cstdlib>
 #include <raylib.h>
 #include <vector>
+
 
 #include "pallete.hpp"
 #include "square.hpp"
 #include "piece_types.hpp"
 #include "rotations.hpp"
-
 using std::vector;
 
 class piece {
@@ -25,7 +24,7 @@ public:
     piece(vector<vector<square>>* f);
 
     void NewPiece(); 
-    void step();
+    bool step();
     void rotateLeft();
     void rotateRight();
     void Left();

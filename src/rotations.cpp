@@ -1,8 +1,14 @@
 #include "rotations.hpp"
 #include "piece_types.hpp"
 #include <iostream>
+#include <raylib.h>
+#include <raymath.h>
 
 rotation::rotation() {}
+
+rotation::rotation(vector<vector<square>> *pF) {
+    playField = pF;
+}
 
 void rotation::SetPiece(PieceTypes p) {
     pieceType = p;
@@ -28,7 +34,7 @@ void rotation::Rotate(vector<Vector2>& squares, int di) {
     
     configRotationIndexDirection(di);
 
-    for(size_t i = 0; i < squares.size(); i++) {
+    for(size_t i = 0; i < squares.size() && canBeRotated; i++) {
         int x_ofset = squares[i].x + rotationSteps[rotationIndex][i].x * di;
         int y_ofset = squares[i].y + rotationSteps[rotationIndex][i].y * di;
         
@@ -40,6 +46,8 @@ void rotation::Rotate(vector<Vector2>& squares, int di) {
             newSquareCoords.push_back(coord);
         }
     }
+    
+    if (canBeRotated) canBeRotated = canRotate(newSquareCoords);
 
     if (canBeRotated) {
         for (size_t i = 0; i < squares.size(); ++i) {
@@ -47,38 +55,10 @@ void rotation::Rotate(vector<Vector2>& squares, int di) {
            squares[i].y = newSquareCoords[i].y; 
         }
         if (di > 0) {
-            //std::cout << "x~pos: " << rotationIndex << " rotationsQuantity: " << rotationsQuantity << "\n";
             ++rotationIndex;    
-            //std::cout << "0~pos: " << rotationIndex << " rotationsQuantity: " << rotationsQuantity << "\n";
             rotationIndex = rotationIndex % rotationsQuantity;
-            //std::cout << "1~pos: " << rotationIndex << " rotationsQuantity: " << rotationsQuantity << "\n";
         }
     }
-    //std::cout << "3~pos: " << rotationIndex << " rotationsQuantity: " << rotationsQuantity << "\n";
-    /* 
-    switch (pieceType) {
-        case PieceTypes::O:
-            std::cout << "O\n";
-            break;
-        case PieceTypes::I:
-            std::cout << "I\n";
-            break;
-        case PieceTypes::J:
-            std::cout << "J\n";
-            break;
-        case PieceTypes::L:
-            std::cout << "L\n";
-            break;
-        case PieceTypes::S:
-            std::cout << "S\n";
-            break;
-        case PieceTypes::T:
-            std::cout << "T\n";
-            break;
-        case PieceTypes::Z:
-            std::cout << "Z\n";
-            break;
-    }*/
 }
 
 void rotation::SetUpRotationSteps() {
@@ -154,7 +134,6 @@ void rotation::SetUpRotationSteps() {
             rotationsQuantity  = ofsets.size();
         } break;
         case PieceTypes::O: {
-
         } 
         default: break;
     }
@@ -164,6 +143,19 @@ void rotation::configRotationIndexDirection(int dir) {
     if (dir < 0) {
         --rotationIndex;
         if (rotationIndex < 0) rotationIndex = rotationsQuantity + rotationIndex;
-        std::cout << "-\n";
     } 
-} 
+}
+
+bool rotation::canRotate(const vector<Vector2> &squares) {
+
+    for (Vector2 squareCord : squares) {
+        if (squareCord.x < 0 || squareCord.x > 9) {
+            return false;        
+        }
+        if (squareCord.y < 0 || squareCord.y > 24) {
+            return false;
+        }
+        if (!(*playField)[squareCord.x][squareCord.y].IsBackground()) return false;
+    }
+    return true;
+}
